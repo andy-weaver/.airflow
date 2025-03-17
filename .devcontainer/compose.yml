@@ -1,0 +1,17 @@
+services:
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: airflow
+    container_name: airflow
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - ./airflow_home:~/airflow
+    environment:
+      - AIRFLOW_HOME=~/airflow
+    networks:
+      - airflow
+      
