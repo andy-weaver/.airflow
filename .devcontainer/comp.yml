@@ -1,0 +1,38 @@
+# docker-compose.yml
+# =============================================================================
+# This docker-compose file defines two services using the image built from the
+# Dockerfile:
+#
+# 1. airflow-webserver: Runs the Airflow webserver on port 8080.
+# 2. airflow-scheduler: Runs the Airflow scheduler.
+#
+# Both services share volumes for DAGs, logs, and plugins, which allows for live
+# development and debugging with nvim.
+# =============================================================================
+version: '3.8'
+services:
+  airflow-webserver:
+    build: .
+    command: airflow webserver --port 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:$AIRFLOW_HOME/dags
+      - ./logs:$AIRFLOW_HOME/logs
+      - ./plugins:$AIRFLOW_HOME/plugins
+    environment:
+      - AIRFLOW_HOME=/opt/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    depends_on:
+      - airflow-scheduler
+
+  airflow-scheduler:
+    build: .
+    command: airflow scheduler
+    volumes:
+      - ./dags:$AIRFLOW_HOME/dags
+      - ./logs:$AIRFLOW_HOME/logs
+      - ./plugins:$AIRFLOW_HOME/plugins
+    environment:
+      - AIRFLOW_HOME=/opt/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
